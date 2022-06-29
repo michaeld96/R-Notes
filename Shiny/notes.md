@@ -294,3 +294,29 @@ server <- function(input, output, session)
 
 shinyApp(ui, server)
  ```
+
+ Note, if we wanted to print out what we would see in the RStudio console, then we would use `verbatimTextOutput()` paired with `renderPrint()`. This idea is illustrated in the next example.
+
+ ## Example 11: Printing RStudio Console to the UI
+
+ ```R
+ library(shiny)
+
+vec <- c(1, 2, 3, 4, 5)
+
+ui <- fluidPage(
+  verbatimTextOutput("console_output")
+)
+
+server <- function(input, output, session)
+{
+  output$console_output <- renderPrint({
+    print("Howdy")
+    #Prints a vector to the output just like it 
+    #would in console.
+    print(vec)
+  })
+}
+
+shinyApp(ui, server)
+ ```
