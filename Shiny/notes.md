@@ -261,3 +261,36 @@ server <- function(input, output, session)
 
 shinyApp(ui, server)
 ```
+## Outputs
+
+Outputs in UI are just placeholders for rendering functions from the server. This placeholder tells the UI where it is wanting to place the output. Outputs follow the same idea of inputs where the first parameter is the `"id"`. So say we use `textOutput()`, well the first parameter of this function is the `outputId` which is then used to communicate with the server to see what is going to be outputted. Note, each output is paired with a `render` function in the server. In base Shiny there are three types of outputs: text, tables, and plots.
+
+### Text
+ 
+ There are two types of outputs we want to use when it comes to text: `textOutput()` for regular text, and `verbatimTextOutput()` for code and console output.
+
+ ## Example 10: Using `textOutput()` and `verbatimTextOutput()`
+
+ This example will look at how outputs pair with a rendering function in the server. Here we are just seeing how these placeholders work in the UI and how they render inside the server function.
+
+ ```R
+ library(shiny)
+
+ui <- fluidPage(
+  textOutput("text_goes_here"),
+  verbatimTextOutput("code_text_here")
+)
+
+server <- function(input, output, session)
+{
+  output$text_goes_here <- renderText({
+    "Hi there!"
+  })
+  # summary is a in house R function.
+  output$code_text_here <- renderText({
+    summary(1:100)
+  })
+}
+
+shinyApp(ui, server)
+ ```
