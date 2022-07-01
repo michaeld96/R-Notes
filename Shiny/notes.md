@@ -265,7 +265,7 @@ server <- function(input, output, session)
 shinyApp(ui, server)
 ```
 
-## Outputs
+## Basic Outputs
 
 Outputs in UI are just placeholders for rendering functions from the server. This placeholder tells the UI where it is wanting to place the output. Outputs follow the same idea of inputs where the first parameter is the `"id"`. So say we use `textOutput()`, well the first parameter of this function is the `outputId` which is then used to communicate with the server to see what is going to be outputted. Note, each output is paired with a `render` function in the server. In base Shiny there are three types of outputs: text, tables, and plots.
 
@@ -324,3 +324,140 @@ server <- function(input, output, session)
 
 shinyApp(ui, server)
  ```
+
+### Tables
+
+In Shiny there are two ways to display data frames in tables:
+
+* `tableOutput()` paired with `renderTable()`. This renders a static table of data that will show all the data at once.
+
+* `dataTableOutput()` paired with `renderDataTable()`. This will render a dynamic table, showing a fixed number of rows along with controls to change which rows are visible.
+
+When using these tables, its good to know when to use them. When we want to use `tableOutput()`, we want to use it for small fixed summaries. Using `dataTableOutput()` is good for showing a complete data frame. _Note:_ A good library for having complete control on the output is `reactable`.
+
+```R
+library(shiny)
+
+ui <- fluidPage(
+  tableOutput("static"),
+  dataTableOutput("dynamic")
+)
+
+server <- function(input, output, session)
+{
+  output$static <- renderTable(head(mtcars))
+  output$dynamic <- renderDataTable(mtcars, options = list(pageLength = 5))
+}
+
+shinyApp(ui, server)
+```
+
+_Note:_ We do not need `{}` for inside of  `renderTable()` or `renderDataTable()`
+
+### Plots
+
+With Shiny's outputs we can display any type of R graphic with `plotOutput()` paired with `renderPlot()`. R graphic meaning any base plot, ggplot2, etc.
+
+## Example 12: Rendering Basic Plot
+
+
+In this example we are going to make a quadratic graph using `curve()`. We first make a simple R function that is going to return $x^2$ to the when this function is called. Next, we write a placeholder in the UI section; this is where the plot will be displayed. After this, we will write the `renderPlot()` and we will use `curve()` here to give us a nice graph displaying $f(x) = x^2$. `res = 98` is telling the graph that we want this PNG to render with this resolution.
+
+```R
+library(shiny)
+library(shinydashboard)
+quad <- function(x)
+{
+  return(x^2)
+}
+
+ui <- fluidPage(
+  plotOutput("plot", width = "400px", height = "400px")
+)
+
+server <- function(input, output, session)
+{
+  output$plot <- renderPlot(curve(exp = quad, from = -10, to = 10), res = 96)
+}
+
+shinyApp(ui, server)
+```
+
+_Note:_ It's recommended that we keep the `res = 96` because this will make the plot look as close as it can when it is rendered in RStudio.
+
+### Downloading
+
+We can let users download a file with `downloadButton()` or `downloadLink()`, but this will require some new techniques in the server function that we will get to later in these notes.
+
+## Basic Reactivity
+
+When it comes to reactive programming, it can be quite different than scripts. The basic idea is we have decencies on some input, and when that input changes than the output also changes. We do this by  using reactive values. When these reactive values change the output is updated with these changed values.
+
+### Input
+
+The `input` parameter is a list-like object that contains all of the inputs sent from the browser by the `inputId`. Inputs from the browser, `inputId`, are read-only. If modifications are tried on them they will throw an error.
+
+Input's are selective on who it is read by. For `inputId` to be read, it must be in a reactive context created by a function like `renderPrint()` or `reactive()`.
+
+### Output
+
+`output` is almost like `input` by being a list-like object. The main difference between the two is that we are sending out output rather than receiving input. We will always use the `output` object in concert with a `render` function.
+
+With render functions it does two things:
+
+1. It sets up a special reactive context that automatically tracks what inputs the output uses.
+2. It converts the output of our R code into HTML that is suitable for the webpage.
+
+### Reactive Programming
+
+We will start our journey with reactive programming by first looking at this example:
+
+## Example 13: Constant Rendering
+
+```R
+library(shiny)
+
+ui <- fluidPage(
+  textInput("name", "What is your name?"),
+  textOutput("response")
+)
+
+server <- function(input, output, session)
+{
+  output$response <- renderText({
+    paste0("Hello ", input$name, "!")
+  })
+}
+
+shinyApp(ui = ui, server = server)
+```
+
+Running the code above we see that every time we type in a letter the server will render it. We can see that this is inefficient. Rather than doing that, let's store the input in a reactive value, and then use `renderText()` to display it in the browser:
+
+## Example 14: Reactive Variable Rendering
+
+```R
+library(shiny)
+
+ui <- fluidPage(
+  textInput("name", "What is your name?"),
+  textOutput("greeting")
+)
+
+server <- function(input, output, session)
+{
+  string <- reactive({
+    paste0("Hello ", input$name, "!")
+  })
+  #Give us a latency when the user is typing name 
+  output$greeting <- renderText(greetings())
+}
+
+shinyApp(ui = ui, server = server)
+```
+
+### Executive Order
+
+The order of our Shiny application is only determined by the reactive graph: Look below at what this graph looks like:
+
+![picture of reactive graph](../Media/reactive-graph.png)
