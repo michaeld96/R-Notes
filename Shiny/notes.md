@@ -111,7 +111,7 @@ There is common structure when it comes to input names. The first argument is al
 
  For our apps to collect numeric inputs we can use `sliderInput()` to have a bar that slides from a min and max value, and the user selects the value they want. There is also a input that a user can type in and set up or down by $1$. This function is `numericInput()`. Sliders are highly customizable!
 
-### Dates 
+### Dates
 
 When using dates we can either choose one day with `dateInput()`, or we can choose a range of dates with `dateRangeInput()`. These will show a calendar and can be customizable with `format`, `language`, and `weekstart`.
 
@@ -133,7 +133,7 @@ server <- function(input, output, session)
 shinyApp(ui, server)
 ```
 
-### Limited Choices: 
+### Limited Choices
 
 When we want to limit the choices that a user can make we will use these two options: `selectInput()` and `radioButtons()`. If you want to select multiple things not using radio buttons you can use `checkboxGroupInput()`. See the example below:
 
@@ -158,6 +158,7 @@ server <- function(input, output, session)
 
 shinyApp(ui, server)
 ```
+
 Note: When we use `selectInput()` on the UI side, if the input list is very large, it would make better use to use `selectInput()` on the server side because it would increase performance.  
 
 ### File Uploads
@@ -165,6 +166,7 @@ Note: When we use `selectInput()` on the UI side, if the input list is very larg
 Letting the user upload files is important when working in data science. When uploading a file it requires some special handling on the server side, but later on in these notes we will focus on that.
 
 ## Example 5: File Upload Input
+
 ```R
 library(shiny)
 
@@ -182,7 +184,7 @@ shinyApp(ui, server)
 
 ### Action Buttons
 
-Action buttons let a user perform something by just hitting a button. Here are two, `actionButton()`, and `actionLink()`. These two are usually paired with `observeEvent()` or `eventReactive()` in the server function. Later on we will learn how to implement these functions inside of our server. Also, the apperance of these buttons can be customized with the `class` argument by using `"btn-primary"`, `"btn-success"`, `"btn-info"`, `"btn-warning"`, or `"btn-danger"`. The button can also be changed with `"btn-lg"`, `"btn-sm"`, or `"btn-xs"`. Last thing we'll mention on action buttons is that they can also span the whole width of the page using `"btn-block`. Here are some button examples: 
+Action buttons let a user perform something by just hitting a button. Here are two, `actionButton()`, and `actionLink()`. These two are usually paired with `observeEvent()` or `eventReactive()` in the server function. Later on we will learn how to implement these functions inside of our server. Also, the appearance of these buttons can be customized with the `class` argument by using `"btn-primary"`, `"btn-success"`, `"btn-info"`, `"btn-warning"`, or `"btn-danger"`. The button can also be changed with `"btn-lg"`, `"btn-sm"`, or `"btn-xs"`. Last thing we'll mention on action buttons is that they can also span the whole width of the page using `"btn-block`. Here are some button examples:
 
 ## Example 6: Action Buttons
 
@@ -201,7 +203,8 @@ server <- function(input, output, session)
 
 shinyApp(ui, server)
 ```
-## Example 7: Having Slider Input, but with Dates:
+
+## Example 7: Having Slider Input, but with Dates
 
 ```R
 library(shiny)
@@ -221,7 +224,7 @@ shinyApp(ui, server)
 
 ## Example 8: SliderInput Animation Loop
 
-With this example we look at `sliderInput()` and how `animation` works on it. We made a slider with a `step = 5` and the animation will play 1000 times. Also, `loop = TRUE`, so when the animation reaches the end the max the animation will start from the beginning. 
+With this example we look at `sliderInput()` and how `animation` works on it. We made a slider with a `step = 5` and the animation will play 1000 times. Also, `loop = TRUE`, so when the animation reaches the end the max the animation will start from the beginning.
 
 ```R
 library(shiny)
@@ -239,7 +242,7 @@ server <- function(input, output, session)
 shinyApp(ui, server)
 ```
 
-## Example 9: Select Input with Catagories
+## Example 9: Select Input with Categories
 
 This example we look into a long list, but we want to group this list by traits they share. With this example we use classes that a student has taken, and we look at these classes by subject.
 
@@ -261,15 +264,16 @@ server <- function(input, output, session)
 
 shinyApp(ui, server)
 ```
+
 ## Outputs
 
 Outputs in UI are just placeholders for rendering functions from the server. This placeholder tells the UI where it is wanting to place the output. Outputs follow the same idea of inputs where the first parameter is the `"id"`. So say we use `textOutput()`, well the first parameter of this function is the `outputId` which is then used to communicate with the server to see what is going to be outputted. Note, each output is paired with a `render` function in the server. In base Shiny there are three types of outputs: text, tables, and plots.
 
 ### Text
- 
+
  There are two types of outputs we want to use when it comes to text: `textOutput()` for regular text, and `verbatimTextOutput()` for code and console output.
 
- ## Example 10: Using `textOutput()` and `verbatimTextOutput()`
+## Example 10: Using `textOutput()` and `verbatimTextOutput()`
 
  This example will look at how outputs pair with a rendering function in the server. Here we are just seeing how these placeholders work in the UI and how they render inside the server function.
 
@@ -297,7 +301,7 @@ shinyApp(ui, server)
 
  Note, if we wanted to print out what we would see in the RStudio console, then we would use `verbatimTextOutput()` paired with `renderPrint()`. This idea is illustrated in the next example.
 
- ## Example 11: Printing RStudio Console to the UI
+## Example 11: Printing RStudio Console to the UI
 
  ```R
  library(shiny)
