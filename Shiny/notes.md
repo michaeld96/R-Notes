@@ -461,3 +461,4 @@ shinyApp(ui = ui, server = server)
 The order of our Shiny application is only determined by the reactive graph: Look below at what this graph looks like:
 
 ![picture of reactive graph](../Media/reactive-graph.png)
+
