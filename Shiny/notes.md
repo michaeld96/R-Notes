@@ -462,3 +462,66 @@ The order of our Shiny application is only determined by the reactive graph: Loo
 
 ![picture of reactive graph](../Media/reactive-graph.png)
 
+## Graphics (Chapter 7)
+
+Graphics in Shiny mainly mean plots. These plots are a visual tool when it comes to rendering data. One main way to display these plots is by using `plotOutput()` in the UI and `renderPlot()` on the server side.
+
+A plot can respond to four different mouse events: `click`, `dblclick` (double click), `hover`, and `brush` (a rectangle selection tool). Below is an example of a simple plot with mouse events.
+
+## Example ?: Simple Plot with Mouse Effects
+
+```R
+library(shiny)
+
+ui <- fluidPage(
+  plotOutput(outputId = "plot", click = "plot_click"),
+  verbatimTextOutput("info")
+)
+
+server <- function(input, output, session)
+{
+  output$plot <- renderPlot({
+    plot(x = mtcars$wt, y = mtcars$mpg, xlab = "Weight", ylab = "MPG", main = "MT CARS")
+  }, res = 96)
+  
+  output$info <- renderPrint({
+    req(input$plot_click)
+    x <- round(input$plot_click$x, 2)
+    y <- round(input$plot_click$y, 2)
+    cat("[", x, ", ", y, "]", sep = "")
+  })
+}
+
+shinyApp(ui = ui, server = server)
+```
+
+Looking at the example above, we have our `plotOutput()` placeholder and we pair that with `renderPlot()`. With this is a new action called `click`. `click` is accessible by `input$plot_click`; this will send coordinates to the server whenever the plot is clicked, and the value is also accessed by `input$plot_click`. This value will be named list with `x` and `y` elements indicating the mouse position.
+
+Inside the server function we render the plot by `renderPlot()`. Inside of the expression we tell that the x-axis will be `mtcars$wt`, and the y-axis `mtcars$mpg`. When we render the print we put a requires clause. This clause causes nothing under it to be ran until this clause has been met.
+
+## Example ?: Clicking and `nearPoints()`
+
+```R
+library(shiny)
+
+ui <- fluidPage(
+  plotOutput(outputId = "plot", click = "plot_click"),
+  tableOutput("data")
+)
+
+server <- function(input, output, session)
+{
+  output$plot <- renderPlot({
+    plot(x = mtcars$wt, y = mtcars$mpg)
+  }, res = 96)
+  
+  output$data <- renderTable({
+    nearPoints(df = mtcars, coordinfo = input$plot_click, xvar = "wt", yvar = "mpg")
+  })
+
+}
+
+shinyApp(ui = ui, server = server)
+```
+
+The only difference here is with `output$data`. The idea behind this is we are rendering a row in the data frame that represents the data point on the graph; this is what `nearPoints()` main purpose.
