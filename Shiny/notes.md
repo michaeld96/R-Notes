@@ -591,4 +591,92 @@ As we see above, we change `click` to `brush`, and this acts like our `inputId`.
 
 ## Modifying the Plot
 
-We want to make changes to the values and then display the results using a plot.
+We want to make changes to the values and then display the results using a plot. To do this we will make use of the keyword `reactiveVal()`. With `reactiveVal()` we can update this reactive value. Below are some simple ideas that come with using `reactiveVal()`.
+
+## Example ?: `reactiveVal()`
+
+```R
+# Assignment:
+val <- reactiveVal(616)
+# Dereference to see what the value is.
+val()
+# Reassignment:
+val(989)
+# Updating current value.
+val(val() + 1)
+```
+
+Now, let's use the idea of reactive value in a graph. 
+
+## Example ?: Graphic with Reactive Value
+
+```R
+library(shiny)
+library(ggplot2)
+
+# Vector with random numbers.
+set.seed(1014)
+df <- data.frame(x = rnorm(100), y = rnorm(100))
+
+ui <- fluidPage(
+  plotOutput(ouputId = "plot", click = "plot_click")
+)
+
+server <- function(input, output, session)
+{
+  # Repeat 1 time for all the rows in df.
+  dist <- reactiveVal(rep(1, nrow(df)))
+  
+  # When user clicks on graph run this.
+  observeEvent(input$plot_click, {
+    dist(nearPoints(df, input$plot_click, allRows = TRUE, addDist = TRUE)$dist_)  
+  }) 
+  
+  output$plot <- renderPlot({
+    df$dist <- dist()
+    ggplot(df, aes(x, y, size = dist)) + 
+      geom_point() + 
+      scale_size_area(limits = c(0, 1000), max_size = 10, guide = NULL)
+  }, res = 96)
+}
+
+shinyApp(ui, server)
+```
+
+We made a graph and when the user clicks on this graph they will see the points on the graph grow larger on how big the distance is from where the user clicked. This is a good introduction on how to use reactive values on graphs.
+
+## Example ?: Selecting Data Points
+
+```R
+library(shiny)
+library(ggplot2)
+
+ui <- fluidPage(
+  plotOutput(outputId = "plot", brush = "plot_brush", dblclick = "plot_reset")
+)
+
+server <- function(input, output, session)
+{
+  selected <- reactiveVal(rep(FALSE, nrow(mtcars)))
+  
+  observeEvent(input$plot_brush, {
+    brushed <- brushedPoints(df = mtcars, brush = input$plot_brush, allRows = TRUE)$selected
+    selected(brushed | selected())
+  })
+  
+  observeEvent(input$plot_reset, {
+    selected(rep(FALSE, nrow(mtcars)))
+  })
+  
+  output$plot <- renderPlot({
+    mtcars$sel <- selected()
+    ggplot(mtcars, aes(wt, mpg)) + 
+    geom_point(aes(colour = sel)) +
+    scale_colour_discrete(limits = c("TRUE", "FALSE"))
+  }, res = 96)
+}
+
+shinyApp(ui, server)
+```
+
+This let's the user create a rectangle and then the user changes the color based on the points they have selected. Then the user can restore the color by double clicking on the graph.
