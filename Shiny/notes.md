@@ -360,7 +360,6 @@ With Shiny's outputs we can display any type of R graphic with `plotOutput()` pa
 
 ## Example 12: Rendering Basic Plot
 
-
 In this example we are going to make a quadratic graph using `curve()`. We first make a simple R function that is going to return $x^2$ to the when this function is called. Next, we write a placeholder in the UI section; this is where the plot will be displayed. After this, we will write the `renderPlot()` and we will use `curve()` here to give us a nice graph displaying $f(x) = x^2$. `res = 98` is telling the graph that we want this PNG to render with this resolution.
 
 ```R
@@ -525,3 +524,71 @@ shinyApp(ui = ui, server = server)
 ```
 
 The only difference here is with `output$data`. The idea behind this is we are rendering a row in the data frame that represents the data point on the graph; this is what `nearPoints()` main purpose.
+
+Now we will focus on ggplot2. ggplot2 is a graphing library that was made by RStudio and is a great way to visualize data.
+
+The code above that is used to create a plot we will use the same idea, but we will use ggplot2 instead.
+
+## Example ?: Using ggplot2
+
+```R
+library(shiny)
+library(ggplot2)
+
+ui <- fluidPage(
+  plotOutput("plot", click = "plot_click"),
+  tableOutput("data")
+)
+
+server <- function(input, output, server)
+{
+  output$plot <- renderPlot({
+    ggplot(data = mtcars, aes(wt, mpg)) + geom_point()
+  }, res = 96)
+  
+  output$data <- renderTable({
+    req(input$plot_click)
+    nearPoints(df = mtcars, coordinfo = input$plot_click)
+  })
+}
+
+shinyApp(ui = ui, server = server)
+```
+
+As we see above, the only difference is that we are using `ggplot` instead of `plot`. For ggplot, we use `data` as the input of the data frame, and `aes` is used for the $x$ and $y$-axis. `geom_points()` is to tell the plot to render as a scatterplot.
+
+## Brushing
+
+A unique way of selecting a collection of dots on a scatter plot is by a method called brushing. This is when a user clicks then drags a rectangular box over the dots on a plot and then this data will be rendered on a table. We will be using `brushedPoints()` helper here.
+
+## Example ?: Brushing
+
+```R
+library(shiny)
+library(ggplot2)
+
+ui <- fluidPage(
+                                # Equiv. to input ID.
+  plotOutput(outputId = "plot", brush = "plot_brush"),
+  tableOutput("data")
+)
+
+server <- function(input, output, server)
+{
+  output$plot <- renderPlot({
+    ggplot(data = mtcars, aes(wt,mpg)) + geom_point()
+  }, res = 96)
+  
+  output$data <- renderTable({
+    brushedPoints(df = mtcars, brush = input$plot_brush)
+  })
+}
+
+shinyApp(ui = ui, server = server)
+```
+
+As we see above, we change `click` to `brush`, and this acts like our `inputId`. When we are rendering the table to show what points in the data frame are there, we used `brushedPoints`, and the parameter that communicates to what the user dragged is with `plot_brush`. We can use `brushOpts()` to control the color, direction, etc.
+
+## Modifying the Plot
+
+We want to make changes to the values and then display the results using a plot.
