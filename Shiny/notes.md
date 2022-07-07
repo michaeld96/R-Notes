@@ -680,3 +680,41 @@ shinyApp(ui, server)
 ```
 
 This let's the user create a rectangle and then the user changes the color based on the points they have selected. Then the user can restore the color by double clicking on the graph.
+
+## Dynamic Width and Height for Graphs
+
+When making a graph they usually come with a `height = auto` and `width = auto`. We notice that we put the height and the width inside of the server; the reason behind this is that everything in the UI does not change. Items in the server are designed to change, and that is why they have the naming convention of `render`. Below is a simple example on how we can change the size of the image rendered by using `sliderInput`.
+
+## Example ?: Render Plot with Dynamic Height and Width
+
+```R
+library(shiny)
+library(ggplot2)
+
+ui <- fluidPage(
+  sliderInput("height", "Height of Graph", min = 100, max = 500, value = 250),
+  sliderInput("width", "Width of Graph", min = 100, max = 500, value = 250),
+  plotOutput("plot", width = 250, height = 250)
+)
+
+server <- function(input, output, session)
+{
+  output$plot <- renderPlot(
+    {
+      plot(rnorm(20), rnorm(20))
+    },
+    height = function(){
+      input$height
+    },
+    width = function()
+    {
+      input$width
+    },
+    res= 96
+  )
+}
+
+shinyApp(ui, server)
+```
+
+The interesting idea here is that we can assign functions inline with a variable, and when these functions are called and changing the variable, this render function will run again.
