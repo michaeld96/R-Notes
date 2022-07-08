@@ -103,15 +103,15 @@ Here, let's note that `selectInput()` is a function in base Shiny that creates a
 
 There is common structure when it comes to input names. The first argument is always `inputId` which will be in the `input` list when being used in the server. Basically, this identifier will be used to connect the front end with the back end. Most function's second parameter is called `label` which will be displayed on the UI where the input is on the screen. The third is `value` which lets you set the default value.
 
-## Free Text Areas
+### Free Text Areas
 
  Shiny can collect small amounts of text using `textInput()`, passwords with `passwordInput()`, and paragraphs with `textAreaInput()`. If you want make sure the user is using certain properties, `validate()`, which validates that an output has all the necessary inputs.
 
-## Numeric Inputs
+### Numeric Inputs
 
  For our apps to collect numeric inputs we can use `sliderInput()` to have a bar that slides from a min and max value, and the user selects the value they want. There is also a input that a user can type in and set up or down by $1$. This function is `numericInput()`. Sliders are highly customizable!
 
-## Dates
+### Dates
 
 When using dates we can either choose one day with `dateInput()`, or we can choose a range of dates with `dateRangeInput()`. These will show a calendar and can be customizable with `format`, `language`, and `weekstart`.
 
@@ -133,7 +133,7 @@ server <- function(input, output, session)
 shinyApp(ui, server)
 ```
 
-## Limited Choices
+### Limited Choices
 
 When we want to limit the choices that a user can make we will use these two options: `selectInput()` and `radioButtons()`. If you want to select multiple things not using radio buttons you can use `checkboxGroupInput()`. See the example below:
 
@@ -161,7 +161,7 @@ shinyApp(ui, server)
 
 Note: When we use `selectInput()` on the UI side, if the input list is very large, it would make better use to use `selectInput()` on the server side because it would increase performance.  
 
-## File Uploads
+### File Uploads
 
 Letting the user upload files is important when working in data science. When uploading a file it requires some special handling on the server side, but later on in these notes we will focus on that.
 
@@ -182,7 +182,7 @@ server <- function(input, output, session)
 shinyApp(ui, server)
 ```
 
-## Action Buttons
+### Action Buttons
 
 Action buttons let a user perform something by just hitting a button. Here are two, `actionButton()`, and `actionLink()`. These two are usually paired with `observeEvent()` or `eventReactive()` in the server function. Later on we will learn how to implement these functions inside of our server. Also, the appearance of these buttons can be customized with the `class` argument by using `"btn-primary"`, `"btn-success"`, `"btn-info"`, `"btn-warning"`, or `"btn-danger"`. The button can also be changed with `"btn-lg"`, `"btn-sm"`, or `"btn-xs"`. Last thing we'll mention on action buttons is that they can also span the whole width of the page using `"btn-block`. Here are some button examples:
 
@@ -269,7 +269,7 @@ shinyApp(ui, server)
 
 Outputs in UI are just placeholders for rendering functions from the server. This placeholder tells the UI where it is wanting to place the output. Outputs follow the same idea of inputs where the first parameter is the `"id"`. So say we use `textOutput()`, well the first parameter of this function is the `outputId` which is then used to communicate with the server to see what is going to be outputted. Note, each output is paired with a `render` function in the server. In base Shiny there are three types of outputs: text, tables, and plots.
 
-## Text
+### Text
 
  There are two types of outputs we want to use when it comes to text: `textOutput()` for regular text, and `verbatimTextOutput()` for code and console output.
 
@@ -325,7 +325,7 @@ server <- function(input, output, session)
 shinyApp(ui, server)
  ```
 
-## Tables
+### Tables
 
 In Shiny there are two ways to display data frames in tables:
 
@@ -354,7 +354,7 @@ shinyApp(ui, server)
 
 _Note:_ We do not need `{}` for inside of  `renderTable()` or `renderDataTable()`
 
-## Plots
+### Plots
 
 With Shiny's outputs we can display any type of R graphic with `plotOutput()` paired with `renderPlot()`. R graphic meaning any base plot, ggplot2, etc.
 
@@ -384,7 +384,7 @@ shinyApp(ui, server)
 
 _Note:_ It's recommended that we keep the `res = 96` because this will make the plot look as close as it can when it is rendered in RStudio.
 
-## Downloading
+### Downloading
 
 We can let users download a file with `downloadButton()` or `downloadLink()`, but this will require some new techniques in the server function that we will get to later in these notes.
 
@@ -392,13 +392,13 @@ We can let users download a file with `downloadButton()` or `downloadLink()`, bu
 
 When it comes to reactive programming, it can be quite different than scripts. The basic idea is we have decencies on some input, and when that input changes than the output also changes. We do this by  using reactive values. When these reactive values change the output is updated with these changed values.
 
-## Input
+### Input
 
 The `input` parameter is a list-like object that contains all of the inputs sent from the browser by the `inputId`. Inputs from the browser, `inputId`, are read-only. If modifications are tried on them they will throw an error.
 
 Input's are selective on who it is read by. For `inputId` to be read, it must be in a reactive context created by a function like `renderPrint()` or `reactive()`.
 
-## Output
+### Output
 
 `output` is almost like `input` by being a list-like object. The main difference between the two is that we are sending out output rather than receiving input. We will always use the `output` object in concert with a `render` function.
 
@@ -407,7 +407,7 @@ With render functions it does two things:
 1. It sets up a special reactive context that automatically tracks what inputs the output uses.
 2. It converts the output of our R code into HTML that is suitable for the webpage.
 
-## Reactive Programming
+### Reactive Programming
 
 We will start our journey with reactive programming by first looking at this example:
 
@@ -455,7 +455,7 @@ server <- function(input, output, session)
 shinyApp(ui = ui, server = server)
 ```
 
-## Executive Order
+### Executive Order
 
 The order of our Shiny application is only determined by the reactive graph: Look below at what this graph looks like:
 
@@ -606,7 +606,7 @@ val(989)
 val(val() + 1)
 ```
 
-Now, let's use the idea of reactive value in a graph. 
+Now, let's use the idea of reactive value in a graph.
 
 ## Example ?: Graphic with Reactive Value
 
@@ -718,3 +718,33 @@ shinyApp(ui, server)
 ```
 
 The interesting idea here is that we can assign functions inline with a variable, and when these functions are called and changing the variable, this render function will run again.
+
+## Images
+
+We can render images with the pairing of `imageOutput()` in the UI and `renderImage()` in the server. Let's see an example and explain how rendering an image works.
+
+```r
+library(shiny)
+library(tidyverse)
+library(dplyr)
+
+ui <- fluidPage(
+  h1("This is a picture of the author!"),
+  imageOutput("my_photo")
+)
+
+server <- function(input, output, session)
+{
+  output$my_photo <- renderImage({
+    list(
+      src = file.path("images/me.jpeg"),
+      width = 400,
+      height = 400
+    )
+  }, deleteFile = FALSE)
+}
+
+shinyApp(ui, server)
+```
+
+First thing we should notice is the pairing of `imageOutput()` and `renderImage()`. `renderImage()` needs to return a list, and needs to end with the `deleteFile = FALSE`. The reason behind `deleteFile` is that `renderImage()` was designed for temporary files and automatically deleted them after creating the image. When we want do display an image we need to include the file path to the image. To do this, all we have to do is use `src = file.path("path/to/file/image.jpeg")`.
