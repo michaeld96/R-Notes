@@ -543,4 +543,43 @@ mtcars$mpg[is.na(mtcars$mpg)] <- mean(mtcars$mpg)
 
 ## Section 10: List
 
-List in R let us store many data frames into one variable.
+List in R let us store many data frames into one variable. First we will create a vector, a matrix, and then a data frame:
+
+```R
+# Creating a vector.
+v <- c(1,2,3)
+# Creating a matrix with data = 1 thru 10
+# and number of rows to be 2
+m <- matrix(1:10, nrow = 2)
+
+df <- mtcars
+# This displays what kind of data is inside of these variables.
+class(v)
+class(m)
+class(df)
+```
+
+Now that we have created these data structures we can put them in what we are going to call a list. As we recall from earlier, a list is a way to store multiple data structures into one variable. The main purpose of doing this is for organization.
+
+```R
+# Displays information with double brackets. [[1]] is v, [[2]] is m, [[3]] is df
+my_list <- list(v, m, df)
+```
+
+As the comment says, `[[1]]` is the name for the first data structure `v`. We can name the data structures in the list by doing the following:
+
+```R
+my_named_list <- list(my_vec = v, my_matrix = m, my_dataframe = df)
+```
+
+We see now that the first item is called `my_vec`. To access this first element in this list we will use the `$` operator. With this we can store the data structure from the list. Below, we are storing the vector `my_vec`.
+
+```R
+copy_of_vec <- my_named_list$my_vec
+```
+
+We can make a lists of lists by combining the two lists. Let's look at the following:
+
+```R
+double_list <- c(my_named_list, my_named_list)
+```
